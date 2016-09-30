@@ -36,7 +36,7 @@ Will render like this:
 
 Linked to the aggregate page for the series.
 
-> Examples
+> Things
 >
 >   Part 1: something
 
