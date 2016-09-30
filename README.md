@@ -20,7 +20,7 @@ tagsRules series $ \serie pattrn -> do
             >>= loadAndApplyTemplate "templates/series.html" ctx
             >>= loadAndApplyTemplate "templates/default.html" ctx
             >>= relativizeUrls
-```haskell
+```
 
 To have access to the series context in each post, change the post rule to something like this:
 
