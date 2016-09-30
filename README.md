@@ -2,7 +2,34 @@
 
 Module for adding series functionality to hakyll.
 
-To add it to your blog, provide, in the metadata, a "series" field, with the name of the series. (each post can only belong to one.) Then, add this to your main:
+In your posts, provide metadata at the top like so:
+
+```markdown
+---
+title: something
+series: things
+---
+```
+
+In your templates, add something like this:
+
+```html
+$if(series)$
+    $series$
+$endif$
+```
+
+Then, hakyll will find the posts with the same info at the top, and render it like this:
+
+> Part 3 from a 5-part series on examples
+
+Which will link to a page like this:
+
+> Examples
+>
+>   Part 1: ...
+
+To add it to your blog, add this to your main:
 
 ```haskell
 series <- buildSeries "posts/*" (fromCapture "series/*.html")
