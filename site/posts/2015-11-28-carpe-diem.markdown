@@ -1,6 +1,5 @@
 ---
 title: Carpe Diem
-series: other
 ---
 
 Fusce tortor quam, egestas in posuere quis, porttitor vel turpis. Donec

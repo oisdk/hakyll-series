@@ -1,6 +1,7 @@
 ---
 title: Rosa Rosa Rosam
 author: Ovidius
+series: things
 ---
 
 Suspendisse pharetra ullamcorper sem et auctor. Suspendisse vitae tellus eu

@@ -5,7 +5,6 @@ import           Data.Monoid       (mappend)
 import           Hakyll
 import           Hakyll.Web.Series
 
-
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do

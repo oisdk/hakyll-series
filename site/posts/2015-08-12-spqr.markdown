@@ -1,6 +1,6 @@
 ---
 title: S.P.Q.R.
-series: examples
+series: things
 ---
 
 Mauris in lorem nisl. Maecenas tempus facilisis ante, eget viverra nisl
