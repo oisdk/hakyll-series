@@ -13,13 +13,13 @@ series: things
 
 This will add the following fields to the post:
 
-    * series: The name of the series
+  * series: The name of the series
 
-    * seriesLength: The total number of posts in the series
+  * seriesLength: The total number of posts in the series
 
-    * seriesCurPos: The position of the current post in the series
+  * seriesCurPos: The position of the current post in the series
 
-    * seriesUrl: The URL of the series page
+  * seriesUrl: The URL of the series page
 
 Using that, in your post template, something like this:
 
