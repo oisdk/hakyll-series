@@ -21,13 +21,13 @@ $endif$
 
 Then, hakyll will find the posts with the same info at the top, and render it like this:
 
-> Part 3 from a 5-part series on examples
+> Part 1 from a 5-part series on things
 
 Which will link to a page like this:
 
 > Examples
 >
->   Part 1: ...
+>   Part 1: something
 
 To add it to your blog, add this to your main:
 
