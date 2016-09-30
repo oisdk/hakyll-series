@@ -1,7 +1,6 @@
 ---
 title: Rosa Rosa Rosam
 author: Ovidius
-series: examples
 ---
 
 Suspendisse pharetra ullamcorper sem et auctor. Suspendisse vitae tellus eu

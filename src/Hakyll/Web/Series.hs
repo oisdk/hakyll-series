@@ -1,64 +1,79 @@
+{-# LANGUAGE LambdaCase #-}
+
 -- | Module for adding series functionality to a blog, similar to tags.
 
 module Hakyll.Web.Series
   ( seriesField
   , getSeries
   , buildSeries
-  , renderSeries
+  , compileSeries
   , SeriesInfo(..)
   ) where
 
+import           Control.Applicative
 import           Control.Monad
 import           Data.Foldable
-import           Data.List                       (elemIndex)
-import qualified Data.Map.Strict                 as Map
+import           Data.List           (elemIndex)
+import qualified Data.Map.Strict     as Map
 import           Data.Maybe
+import qualified Data.Set            as Set
 import           Hakyll
-import           Prelude                         hiding (head)
-import           Text.Blaze.Html                 (toHtml, toValue, (!))
-import           Text.Blaze.Html.Renderer.String (renderHtml)
-import qualified Text.Blaze.Html5                as H
-import qualified Text.Blaze.Html5.Attributes     as A
-import qualified Data.Set as Set
+import           Prelude             hiding (head)
 
 -- | Gets the series from an identifier. Similar to 'getTags',
 -- except it only accepts one series per identifier.
 getSeries :: MonadMetadata m => Identifier -> m (Maybe String)
-getSeries = fmap (removeEmpty . trim <=< Map.lookup "series") . getMetadata where
-  removeEmpty [] = Nothing
-  removeEmpty xs = Just xs
+getSeries = flip getMetadataField "series"
 
--- | Renders (with links) a given series.
-renderSeries :: String                  -- ^ Name of series
-             -> (SeriesInfo -> String)  -- ^ Function for displaying series info
-             -> Tags                    -- ^ Collected series
-             -> Identifier              -- ^ Thing which is a member of a series
-             -> Maybe (Compiler String) -- ^ Returns nothing if the thing was not a member of a series
-renderSeries serie desc tags ident = do
-  otherPostsInSeries <- lookup serie (tagsMap tags)
+-- | Compiles all of the information available on a given series
+compileSeries :: String              -- ^ Name of series
+              -> Tags                -- ^ Collected series
+              -> Identifier          -- ^ Thing which is a member of a series
+              -> Compiler SeriesInfo
+compileSeries serie tags ident = do
+  otherPostsInSeries <- toAlt (lookup serie (tagsMap tags))
   let seriesLen = length otherPostsInSeries
-  curInd <- elemIndex ident otherPostsInSeries
+  curInd <- toAlt (elemIndex ident otherPostsInSeries)
   let curNum = curInd + 1
-  let desc' = desc (SeriesInfo serie curNum seriesLen)
-  let renderLink link = renderHtml $ H.a ! A.href (toValue $ toUrl link) $ toHtml desc'
-  pure $ foldMap renderLink <$> getRoute (tagsMakeId tags serie)
+  loc <- toAlt =<< getRoute (tagsMakeId tags serie)
+  pure $ SeriesInfo seriesLen curNum serie (toUrl loc)
 
 -- | This represents the information available in an item
 -- in a series, for display.
 data SeriesInfo = SeriesInfo
-  { seriesName   :: String -- ^ The name of the series
-  , seriesLength :: Int    -- ^ The total length of the series
+  { seriesLength :: Int    -- ^ The total length of the series
   , seriesCurPos :: Int    -- ^ The number of the current post in this series
+  , seriesName   :: String -- ^ The name of the series
+  , seriesUrl    :: String -- ^ The location of the aggregated posts
   }
 
--- | Renders series with links.
-seriesField :: (SeriesInfo -> String) -- ^ Custom rendering function for a series
-            -> Tags                   -- ^ Collected series
-            -> Context a
-seriesField desc tags = field "series" $ \item -> do
-    let ident = itemIdentifier item
-    series <- getSeries ident
-    fromMaybe (pure "") (series >>= \serie -> renderSeries serie desc tags ident)
+toAlt :: Alternative f => Maybe a -> f a
+toAlt = maybe empty pure
+
+-- | Generates four fields:
+--
+--    * series: The name of the series
+--
+--    * seriesLength: The total number of posts in the series
+--
+--    * seriesCurPos: The position of the current post in the series
+--
+--    * seriesUrl: The URL of the series page
+
+seriesField :: Tags -> Context a
+seriesField tags = Context $ const . \case
+    "series"       -> getSeriesField seriesName
+    "seriesCurPos" -> getSeriesField (show . seriesCurPos)
+    "seriesLength" -> getSeriesField (show . seriesLength)
+    "seriesUrl"    -> getSeriesField seriesUrl
+    _              -> const empty
+  where
+    getSeriesField :: (SeriesInfo -> String) -> Item a -> Compiler ContextField
+    getSeriesField disp item = do
+      serie <- getSeries ident >>= maybe empty pure
+      seriesInfo <- compileSeries serie tags ident
+      pure (StringField (disp seriesInfo))
+      where ident = itemIdentifier item
 
 -- | Similar to the 'buildTags' function in "Hakyll.Web.Tags", except
 -- checks the series field, and can only accept one series per item.

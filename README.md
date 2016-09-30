@@ -11,19 +11,30 @@ series: things
 ---
 ```
 
-In your templates, add something like this:
+This will add the following fields to the post:
+
+    * series: The name of the series
+
+    * seriesLength: The total number of posts in the series
+
+    * seriesCurPos: The position of the current post in the series
+
+    * seriesUrl: The URL of the series page
+
+Using that, in your post template, something like this:
+
 
 ```html
 $if(series)$
-    $series$
+    <a href="$seriesUrl$">Part $seriesCurPos$ of a $seriesLength$-part series on $series$</a>
 $endif$
 ```
 
-Then, hakyll will find the posts with the same info at the top, and render it like this:
+Will render like this:
 
-> Part 1 from a 5-part series on things
+> Part 1 of a 5-part series on things
 
-Which will link to a page like this:
+Linked to the aggregate page for the series.
 
 > Examples
 >
@@ -64,10 +75,7 @@ Where `postCtxWithSeries` can be something like:
 
 ```haskell
 postCtxWithSeries :: Tags -> Context String
-postCtxWithSeries series = seriesField desc series `mappend` postCtx
-  where
-    desc (SeriesInfo serieName curNum seriesLen) = concat
-      ["Part ", show curNum, " from a ", show seriesLen, "-part series on ", serieName]
+postCtxWithSeries series = seriesField series `mappend` postCtx
 ```
 
 A minimal example is provided in this repo, on top of the default hakyll setup. (it also provides the templates)

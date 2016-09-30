@@ -85,7 +85,4 @@ postCtx =
     defaultContext
 
 postCtxWithSeries :: Tags -> Context String
-postCtxWithSeries series = seriesField desc series `mappend` postCtx
-  where
-    desc (SeriesInfo serieName curNum seriesLen) = concat
-      [ "Part ", show curNum, " from a ", show seriesLen, "-part series on ", serieName]
+postCtxWithSeries series = seriesField series `mappend` postCtx
