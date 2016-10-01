@@ -47,8 +47,8 @@ data SeriesInfo = SeriesInfo
   , seriesUrl    :: String -- ^ The location of the aggregated posts
   }
 
-toAlt :: Alternative f => Maybe a -> f a
-toAlt = maybe empty pure
+toAlt :: (Foldable f, Alternative m) => f a -> m a
+toAlt = foldr ((<|>) . pure) empty
 
 -- | Generates four fields:
 --
@@ -68,9 +68,8 @@ seriesField tags = Context $ const . \case
     "seriesUrl"    -> getSeriesField seriesUrl
     _              -> const empty
   where
-    getSeriesField :: (SeriesInfo -> String) -> Item a -> Compiler ContextField
     getSeriesField disp item = do
-      serie <- getSeries ident >>= maybe empty pure
+      serie <- toAlt =<< getSeries ident
       seriesInfo <- compileSeries serie tags ident
       pure (StringField (disp seriesInfo))
       where ident = itemIdentifier item
