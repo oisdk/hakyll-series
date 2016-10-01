@@ -40,39 +40,37 @@ f >-> g = f >>> fmap g
 
 seriesField :: Tags -> Context a
 seriesField tags = Context $ const . \case
-    "series" ->
-            seriesName
-        >-> StringField
-    "seriesCurPos" ->
-            itemIdentifier &&& otherPostsInSeries
-        >>> sequence
-        >>> fmap (uncurry elemIndex)
-        >=> toAlt
-        >-> succ
-        >>> show
-        >>> StringField
-    "seriesLength" ->
-            otherPostsInSeries
-        >-> length
-        >>> show
-        >>> StringField
-    "seriesUrl" ->
-            seriesName
-        >=> tagsMakeId tags
-        >>> getRoute
-        >=> toAlt
-        >-> toUrl
-        >>> StringField
+    "series"       -> seriesName
+                  >-> StringField
+
+    "seriesCurPos" -> itemIdentifier &&& otherPostsInSeries
+                  >>> sequence
+                  >>> fmap (uncurry elemIndex)
+                  >=> toAlt
+                  >-> succ
+                  >>> show
+                  >>> StringField
+
+    "seriesLength" -> otherPostsInSeries
+                  >-> length
+                  >>> show
+                  >>> StringField
+
+    "seriesUrl"    -> seriesName
+                  >=> tagsMakeId tags
+                  >>> getRoute
+                  >=> toAlt
+                  >-> toUrl
+                  >>> StringField
+
     _ -> const empty
   where
-    seriesName =
-            itemIdentifier
-        >>> getSeries
-        >=> toAlt
-    otherPostsInSeries =
-            seriesName
-        >=> flip lookup (tagsMap tags)
-        >>> toAlt
+    seriesName = itemIdentifier
+             >>> getSeries
+             >=> toAlt
+    otherPostsInSeries = seriesName
+                     >=> flip lookup (tagsMap tags)
+                     >>> toAlt
 
 -- | Similar to the 'buildTags' function in "Hakyll.Web.Tags", except
 -- checks the series field, and can only accept one series per item.
