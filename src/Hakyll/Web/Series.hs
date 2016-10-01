@@ -11,13 +11,10 @@ module Hakyll.Web.Series
 import           Control.Applicative
 import           Control.Arrow
 import           Control.Monad
-import           Data.Foldable
 import           Data.List           (elemIndex)
 import qualified Data.Map.Strict     as Map
-import           Data.Maybe
 import qualified Data.Set            as Set
 import           Hakyll
-import           Prelude             hiding (head)
 
 -- | Gets the series from an identifier. Similar to 'getTags',
 -- except it only accepts one series per identifier.
@@ -26,6 +23,10 @@ getSeries = flip getMetadataField "series"
 
 toAlt :: (Foldable f, Alternative m) => f a -> m a
 toAlt = foldr ((<|>) . pure) empty
+
+infixr 1 >->
+(>->) :: Functor f =>  (a -> f b) -> (b -> c) -> a -> f c
+f >-> g = f >>> fmap g
 
 -- | Generates four fields:
 --
@@ -41,27 +42,27 @@ seriesField :: Tags -> Context a
 seriesField tags = Context $ const . \case
     "series" ->
             seriesName
-        >>> fmap StringField
+        >-> StringField
     "seriesCurPos" ->
             itemIdentifier &&& otherPostsInSeries
         >>> sequence
         >>> fmap (uncurry elemIndex)
         >=> toAlt
-        >>> fmap (succ
+        >-> succ
         >>> show
-        >>> StringField)
+        >>> StringField
     "seriesLength" ->
             otherPostsInSeries
-        >>> fmap (length
+        >-> length
         >>> show
-        >>> StringField)
+        >>> StringField
     "seriesUrl" ->
             seriesName
         >=> tagsMakeId tags
         >>> getRoute
         >=> toAlt
-        >>> fmap (toUrl
-        >>> StringField)
+        >-> toUrl
+        >>> StringField
     _ -> const empty
   where
     seriesName =
