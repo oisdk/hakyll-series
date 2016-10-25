@@ -2,6 +2,8 @@
 
 Module for adding series functionality to hakyll.
 
+Example [here](https://oisdk.github.io/hakyll-series/).
+
 In your posts, provide metadata at the top like so:
 
 ```markdown
