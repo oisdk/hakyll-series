@@ -47,8 +47,8 @@ To add it to your blog, add this to your main:
 ```haskell
 series <- buildSeries "posts/*" (fromCapture "series/*.html")
 
-tagsRules series $ \serie pattrn -> do
-    let title = toUpper (head serie) : tail serie
+tagsRules series $ \(s:erie) pattrn -> do
+    let title = toUpper s : erie
     route idRoute
     compile $ do
         posts <- chronological =<< loadAll pattrn
