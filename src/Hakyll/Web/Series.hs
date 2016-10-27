@@ -13,6 +13,7 @@ import           Control.Arrow
 import           Control.Monad
 import           Data.List           (elemIndex)
 import qualified Data.Map.Strict     as Map
+import           Data.Monoid
 import qualified Data.Set            as Set
 import           Hakyll
 
@@ -22,7 +23,7 @@ getSeries :: MonadMetadata m => Identifier -> m (Maybe String)
 getSeries = flip getMetadataField "series"
 
 toAlt :: (Foldable f, Alternative m) => f a -> m a
-toAlt = foldr ((<|>) . pure) empty
+toAlt = getAlt . foldMap pure
 
 infixr 1 >->
 (>->) :: Functor f =>  (a -> f b) -> (b -> c) -> a -> f c
