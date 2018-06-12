@@ -1,10 +1,9 @@
-resolver: lts-7.7
+resolver: lts-11.11
 
 packages:
 - '.'
 
-extra-deps:
-- hakyll-4.9.0.0
+extra-deps: []
 
 flags: {}
 

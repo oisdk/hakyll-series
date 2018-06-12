@@ -1,5 +1,5 @@
 name:               hakyll-series
-version:            0.1.0.1
+version:            0.1.2.0
 synopsis:           Adds series functionality to hakyll
 description:
   Module for adding series functionality to hakyll.
@@ -83,7 +83,7 @@ library
   hs-source-dirs:   src
   exposed-modules:  Hakyll.Web.Series
   build-depends:    base == 4.*
-                  , hakyll >= 4.8.0
+                  , hakyll
                   , containers >= 0.5
   default-language: Haskell2010
 
